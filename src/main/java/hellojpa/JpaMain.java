@@ -16,15 +16,30 @@ public class JpaMain {
         tx.begin();
 
         try {
-//            Member findMember = em.find(Member.class, 1L);
 
-            /** 전체 회원 검색 */
-            List<Member> result = em.createQuery("select m from Member as m", Member.class)
-                    .getResultList();
+            // 팀 저장
+            Team team = new Team();
+            team.setName("TeamA");
+            em.persist(team);
 
-            for (Member member : result) {
-                System.out.println("member.name = " + member.getName());
+
+            // 회원 저장
+            Member member = new Member();
+            member.setUsername("member1");
+            member.setTeam(team);
+            em.persist(member);
+
+            em.flush();
+            em.clear();
+
+            // 조회
+            Member findMember = em.find(Member.class, member.getId());
+            List<Member> members = findMember.getTeam().getMembers();
+
+            for (Member m : members) {
+                System.out.println("m = " + m.getUsername());
             }
+
 
             tx.commit();
         } catch (Exception e) {
